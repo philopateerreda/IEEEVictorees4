@@ -252,7 +252,7 @@ Executive Summary:"""
     
     def _generate_epoch_summary(self, analysis_text: str, question_number: int, epoch_num: int) -> str:
         """
-        Generate a concise 8-20 word summary for a single question's analysis.
+        Generate a concise 8-12 word summary for a single question's analysis.
         Preserves all numerical data and focuses on key insights.
         
         Args:
@@ -261,7 +261,7 @@ Executive Summary:"""
             epoch_num: Current epoch number
             
         Returns:
-            Generated summary (8-20 words)
+            Generated summary (8-12 words)
         """
         try:
             # Clean the analysis text by removing question headers
@@ -271,25 +271,25 @@ Executive Summary:"""
             numbers = self._extract_numbers(cleaned_analysis)
             numbers_context = f" Key numbers: {', '.join(numbers)}" if numbers else ""
             
-            # System prompt optimized for 8-20 word summaries with number preservation
-            system_prompt = """You are an expert financial analyst. Create EXACTLY 8-20 word summaries. ALWAYS include ALL numbers mentioned in the text. Be concise and factual. Use active voice. Focus on key insights. NO filler words like 'Analysis highlights', 'The analysis', 'This shows', etc. Start directly with the main point."""
+            # System prompt optimized for 8-12 word summaries with number preservation
+            system_prompt = """You are an expert financial analyst. Create EXACTLY 8-12 word summaries. ALWAYS include ALL numbers mentioned in the text. Be concise and factual. Use active voice. Focus on key insights. NO filler words like 'Analysis highlights', 'The analysis', 'This shows', etc. Start directly with the main point."""
             
             # User prompt with explicit instructions
-            user_prompt = f"""Summarize this VC analysis in EXACTLY 8-20 words. MUST include ALL numbers found in the text.{numbers_context}
+            user_prompt = f"""Summarize this VC analysis in EXACTLY 8-12 words. MUST include ALL numbers found in the text.{numbers_context}
 
 Analysis: {cleaned_analysis}
 
-Summary (8-20 words):"""            
+Summary (8-12 words):"""            
             
             # Truncate if too long to prevent context overflow
             max_input_length = self.n_ctx - 300  # Reserve space for prompt and output
             if len(user_prompt) > max_input_length:
                 truncated_analysis = cleaned_analysis[:max_input_length - 200] + "..."
-                user_prompt = f"""Summarize this VC analysis in EXACTLY 8-20 words. MUST include ALL numbers found in the text.{numbers_context}
+                user_prompt = f"""Summarize this VC analysis in EXACTLY 8-12 words. MUST include ALL numbers found in the text.{numbers_context}
 
 Analysis: {truncated_analysis}
 
-Summary (8-20 words):"""
+Summary (8-12 words):"""
                 logging.warning(f"  ⚠️ Input truncated for epoch {epoch_num}")
             
             logging.info(f"  💬 Generating summary for epoch {epoch_num}...")
@@ -394,7 +394,7 @@ Summary (8-20 words):"""
         summary = summary.replace("Summary:", "").replace("summary:", "").strip()
         summary = summary.replace("(", "").replace(")", "").strip()
         
-        # Ensure it's a reasonable length (8-20 words)
+        # Ensure it's a reasonable length (8-12 words)
         words = summary.split()
         if len(words) < 8:
             # Append question number and key numbers if too short
