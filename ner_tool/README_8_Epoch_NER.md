@@ -18,10 +18,13 @@ It processes a document in eight separate passes ("epochs"), each targeting a sp
 3.  **Reset & Save**: Clear the LLM context and save the section's results to a unique JSON file.
 4.  **Merge**: Combine all 8 JSON files into a single, final result.
 
+#### File Workflow
+The system consists of two main files that work in sequence: Users execute `python ner_8_epoch_analysis.py input_pitch.txt` which serves as the main entry point and orchestrator, internally importing and utilizing `llm_summarization.py` to initialize and manage the local LLM model (loads GGUF model, handles context resets between epochs, and executes the 8 focused extraction prompts). The 8-epoch analysis creates individual JSON files for each section (company_profile, personnel, market_analysis, product_and_technology, business_performance_and_traction, strategy_and_goals, funding_information, mentioned_organizations) and merges them into a final comprehensive result.
+
 #### Usage
 The system can be run via the command line or imported as a Python module.
 
-**CLI Example:**
+**Command Line:**
 ```bash
 python ner_8_epoch_analysis.py input_pitch.txt -o output_dir
 ```
