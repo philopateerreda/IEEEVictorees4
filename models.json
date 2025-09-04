@@ -1,0 +1,9 @@
+{
+  "models": {
+    "LFM2-1.2B": {
+      "name": "LFM2-1.2B-Q8_0",
+      "path": "P:\\progs\\vsCode\\VSProjects\\NLP\\models\\liquid\\LFM2-1.2B-Q8_0.gguf"
+    }
+  },
+  "default_model": "LFM2-1.2B"
+}

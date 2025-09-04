@@ -1,0 +1,9 @@
+{
+  "business_performance_and_traction": {
+    "pilot_program_results": [],
+    "current_financials": [],
+    "sales_pipeline": []
+  },
+  "_extraction_error": "JSON parsing failed: Expecting value: line 1 column 1 (char 0)",
+  "_extraction_timestamp": "2025-09-04T20:34:19.565861"
+}
