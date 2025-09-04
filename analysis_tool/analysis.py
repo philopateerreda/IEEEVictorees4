@@ -18,9 +18,9 @@ logging.basicConfig(
 class VCPitchAnalyzer:
     """Simplified VC Pitch Analyzer with clean structured output."""
     
-    def __init__(self):
+    def __init__(self, model_name: Optional[str] = None):
         """Initialize the VC analyzer with 10-epoch approach: one question per epoch."""
-        self.llm_summarizer = get_llm_summarizer()
+        self.llm_summarizer = get_llm_summarizer(model_name=model_name)
         self.question_results = []  # Store individual question results for JSON output
         
     def get_vc_checklist_questions(self) -> List[str]:
@@ -250,7 +250,7 @@ Begin your analysis now:"""
                     "timestamp": datetime.datetime.now().isoformat(),
                     "total_questions": len(self.question_results),
                     "analysis_method": "10-epoch individual question processing",
-                    "llm_model": "Local GGUF Model"
+                    "llm_model": self.llm_summarizer.model_path if self.llm_summarizer.is_available else "N/A"
                 },
                 "questions": self.question_results
             }
@@ -347,6 +347,8 @@ def main():
                        help='Output PDF filename (will be made unique with timestamp and placed in output/ folder. Default: auto-generated unique filename)')
     parser.add_argument('-t', '--theme', choices=['light', 'dark'], default='light',
                        help='PDF theme (default: light)')
+    parser.add_argument('--model', type=str, default=None,
+                        help='Name of the model to use for analysis (e.g., "mistral-7b-instruct-v0.2"). Uses default if not specified.')
     
     args = parser.parse_args()
     
@@ -366,7 +368,7 @@ def main():
         print(f"📖 Read pitch from '{args.pitch_file}' ({len(pitch_text)} characters)")
         
         # Create analyzer and run analysis
-        analyzer = VCPitchAnalyzer()
+        analyzer = VCPitchAnalyzer(model_name=args.model)
         print("🚀 Starting VC pitch analysis...")
         
         analysis_results = analyzer.analyze_pitch(pitch_text)
@@ -399,7 +401,7 @@ def main():
                 print("🔄 Generating 10-epoch summaries for each question...")
                 try:
                     from llm_summarization import generate_10_epoch_summaries
-                    if generate_10_epoch_summaries(json_path):
+                    if generate_10_epoch_summaries(json_path, model_name=args.model):
                         print(f"✅ Question summaries generated and added to JSON: {json_path}")
                     else:
                         print(f"⚠️ Summary generation failed, but JSON analysis is still available")

@@ -1,8 +1,8 @@
 """
-8-Epoch Named Entity Recognition (NER) Analysis for VC Pitch Text
+10-Epoch Named Entity Recognition (NER) Analysis for VC Pitch Text
 Using Multi-Pass Focused Extraction with LLM Context Resets
 
-This module implements the 8-epoch approach for NER extraction, where each epoch
+This module implements the 10-epoch approach for NER extraction, where each epoch
 focuses on one specific section with complete LLM context reset between epochs.
 """
 
@@ -20,13 +20,174 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-class EightEpochNERAnalyzer:
-    """8-Epoch Named Entity Recognition analyzer using focused extraction with LLM context resets."""
+class TenEpochNERAnalyzer:
+    """10-Epoch Named Entity Recognition analyzer using focused extraction with LLM context resets."""
     
-    def __init__(self):
+    def __init__(self, model_name: Optional[str] = None):
         """Initialize the 8-epoch NER analyzer."""
-        self.llm_summarizer = get_llm_summarizer()
-        self.epoch_configs = self._get_epoch_configurations()
+        self.llm_summarizer = get_llm_summarizer(model_name)
+        self.epoch_configs = [
+            {
+                "epoch_number": 1,
+                "section_name": "problem_extraction",
+                "schema": {
+                    "problem_extraction": {
+                        "core_problem": "string",
+                        "problem_description": "string",
+                        "target_audience_affected": ["string"],
+                        "pain_points": ["string"],
+                        "market_gap_identified": "string"
+                    }
+                }
+            },
+            {
+                "epoch_number": 2,
+                "section_name": "solution_extraction",
+                "schema": {
+                    "solution_extraction": {
+                        "proposed_solution": "string",
+                        "solution_description": "string",
+                        "key_features": ["string"],
+                        "competitive_advantage": "string",
+                        "implementation_approach": "string"
+                    }
+                }
+            },
+            {
+                "epoch_number": 3,
+                "section_name": "funding_information",
+                "schema": {
+                    "funding_information": {
+                        "funding_ask": {
+                            "amount": "string",
+                            "round": "string"
+                        },
+                        "use_of_funds": ["string"],
+                        "financial_projections": [
+                            {
+                                "value": "string",
+                                "context": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "epoch_number": 4,
+                "section_name": "market_analysis",
+                "schema": {
+                    "market_analysis": {
+                        "industry_sector": "string",
+                        "target_geographies": ["string"],
+                        "target_customer_segments": ["string"],
+                        "market_metrics": [
+                            {
+                                "value": "string",
+                                "context": "string",
+                                "metric_type": "Market Size | Growth Rate"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "epoch_number": 5,
+                "section_name": "company_profile",
+                "schema": {
+                    "company_profile": {
+                        "company_name": "string",
+                        "company_description": "string",
+                        "founding_year": "string",
+                        "headquarters_location": "string",
+                        "mission_statement": "string"
+                    }
+                }
+            },
+            {
+                "epoch_number": 6,
+                "section_name": "product_and_technology",
+                "schema": {
+                    "product_and_technology": {
+                        "core_technology_stack": ["string"],
+                        "products_and_features": [
+                            {
+                                "name": "string",
+                                "description": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "epoch_number": 7,
+                "section_name": "personnel", 
+                "schema": {
+                    "personnel": {
+                        "key_team_members": [
+                            {
+                                "name": "string",
+                                "role": "string",
+                                "background_summary": "string"
+                            }
+                        ],
+                        "advisory_board": "string"
+                    }
+                }
+            },
+            {
+                "epoch_number": 8,
+                "section_name": "business_performance_and_traction",
+                "schema": {
+                    "business_performance_and_traction": {
+                        "pilot_program_results": [
+                            {
+                                "value": "string",
+                                "context": "string"
+                            }
+                        ],
+                        "current_financials": [
+                            {
+                                "value": "string",
+                                "context": "string"
+                            }
+                        ],
+                        "sales_pipeline": [
+                            {
+                                "value": "string",
+                                "context": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "epoch_number": 9,
+                "section_name": "strategy_and_goals",
+                "schema": {
+                    "strategy_and_goals": {
+                        "go_to_market_summary": "string",
+                        "short_term_goals": [
+                            {
+                                "target": "string",
+                                "timeline": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "epoch_number": 10,
+                "section_name": "mentioned_organizations",
+                "schema": {
+                    "mentioned_organizations": [
+                        {
+                            "name": "string",
+                            "context": "Affiliation or background of a team member, partner, etc."
+                        }
+                    ]
+                }
+            }
+        ]
         
     def _get_epoch_configurations(self) -> List[Dict[str, Any]]:
         """Get the 8 epoch configurations with section names and schemas."""
@@ -161,12 +322,38 @@ class EightEpochNERAnalyzer:
                         }
                     ]
                 }
+            },
+            {
+                "epoch_number": 9,
+                "section_name": "problem_extraction",
+                "schema": {
+                    "problem_extraction": {
+                        "core_problem": "string",
+                        "problem_description": "string",
+                        "target_audience_affected": ["string"],
+                        "pain_points": ["string"],
+                        "market_gap_identified": "string"
+                    }
+                }
+            },
+            {
+                "epoch_number": 10,
+                "section_name": "solution_extraction",
+                "schema": {
+                    "solution_extraction": {
+                        "proposed_solution": "string",
+                        "solution_description": "string",
+                        "key_features": ["string"],
+                        "competitive_advantage": "string",
+                        "implementation_approach": "string"
+                    }
+                }
             }
         ]
     
-    def run_8_epoch_analysis(self, pitch_text: str, output_dir: Optional[str] = None) -> Dict[str, Any]:
+    def run_10_epoch_analysis(self, pitch_text: str, output_dir: Optional[str] = None) -> Dict[str, Any]:
         """
-        Run the complete 8-epoch NER analysis with focused extraction.
+        Run the complete 10-epoch NER analysis with focused extraction.
         
         Args:
             pitch_text: The business pitch text to analyze
@@ -182,14 +369,20 @@ class EightEpochNERAnalyzer:
                 "timestamp": datetime.datetime.now().isoformat()
             }
         
-        logging.info("=== STARTING 8-EPOCH NER ANALYSIS ===")
+        logging.info("=== STARTING 10-EPOCH NER ANALYSIS ===")
         logging.info(f"Pitch text length: {len(pitch_text)} characters")
         
-        # Setup output directory
+        # Setup output directory - create distinct folder for each pitch analysis
         if output_dir is None:
             base_dir = os.path.dirname(os.path.abspath(__file__))
+            
+            # Create a unique identifier for this pitch analysis
+            import hashlib
+            pitch_hash = hashlib.md5(pitch_text.encode('utf-8')).hexdigest()[:8]
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            output_dir = os.path.join(base_dir, 'output', f'8_Epoch_NER_{timestamp}')
+            
+            # Create output directory in output_directory folder with pitch-specific name
+            output_dir = os.path.join(base_dir, 'output_directory', f'pitch_analysis_{pitch_hash}_{timestamp}')
         
         os.makedirs(output_dir, exist_ok=True)
         logging.info(f"Output directory: {output_dir}")
@@ -198,7 +391,7 @@ class EightEpochNERAnalyzer:
         epoch_results = []
         epoch_files = []
         
-        epoch_names = ["First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth"]
+        epoch_names = ["Problem", "Solution", "Funding", "Market Analysis", "Company Profile", "Product & Tech", "Personnel", "Business Performance", "Strategy & Goals", "Mentioned Organizations"]
         
         # Process each epoch
         for config in self.epoch_configs:
@@ -206,7 +399,7 @@ class EightEpochNERAnalyzer:
             section_name = config["section_name"]
             schema = config["schema"]
             
-            logging.info(f"📋 Preparing EPOCH {epoch_num}: {section_name}")
+            logging.info(f" Preparing EPOCH {epoch_num}: {section_name}")
             
             # Complete LLM session reset to prevent context contamination
             self._reset_llm_session(epoch_num)
@@ -215,7 +408,7 @@ class EightEpochNERAnalyzer:
             prompt = self._create_master_prompt(epoch_num, section_name, schema, pitch_text)
             
             # Execute the focused extraction
-            logging.info(f"🚀 STARTING EPOCH {epoch_num} EXTRACTION...")
+            logging.info(f" STARTING EPOCH {epoch_num} EXTRACTION...")
             extraction_result = self._execute_epoch_extraction(prompt, epoch_num, section_name)
             
             # Save individual epoch result
@@ -230,14 +423,14 @@ class EightEpochNERAnalyzer:
             
             # Print epoch completion message as required
             print(f"{epoch_names[epoch_num - 1]} epoch finished")
-            logging.info(f"✅ EPOCH {epoch_num} FINISHED - Saved to {epoch_filename}")
+            logging.info(f" EPOCH {epoch_num} FINISHED - Saved to {epoch_filename}")
         
         # Merge all epoch results into final comprehensive JSON
         final_result = self._merge_epoch_results(epoch_results, output_dir)
         
         # Create summary
         summary = {
-            "analysis_type": "8-Epoch Focused NER Extraction",
+            "analysis_type": "10-Epoch Focused NER Extraction",
             "timestamp": datetime.datetime.now().isoformat(),
             "input_text_length": len(pitch_text),
             "output_directory": output_dir,
@@ -251,7 +444,7 @@ class EightEpochNERAnalyzer:
             "extraction_summary": final_result["extraction_summary"]
         }
         
-        logging.info("🎉 8-EPOCH NER ANALYSIS COMPLETED SUCCESSFULLY")
+        logging.info(" 10-EPOCH NER ANALYSIS COMPLETED SUCCESSFULLY")
         logging.info(f"Final merged result: {final_result['final_file_path']}")
         
         return summary
@@ -261,12 +454,12 @@ class EightEpochNERAnalyzer:
         try:
             if self.llm_summarizer.llm and hasattr(self.llm_summarizer.llm, 'reset'):
                 self.llm_summarizer.llm.reset()
-                logging.info(f"  🔄 LLM session completely reset for epoch {epoch_num}")
+                logging.info(f"  LLM session completely reset for epoch {epoch_num}")
             else:
                 # For models without explicit reset, we reinitialize key components
-                logging.info(f"  🔄 LLM context cleared for epoch {epoch_num}")
+                logging.info(f"  LLM context cleared for epoch {epoch_num}")
         except Exception as e:
-            logging.warning(f"  ⚠️ Session reset warning for epoch {epoch_num}: {e}")
+            logging.warning(f"  Session reset warning for epoch {epoch_num}: {e}")
     
     def _create_master_prompt(self, epoch_num: int, section_name: str, schema: Dict[str, Any], pitch_text: str) -> str:
         """Create the master prompt template for the specific epoch."""
@@ -300,7 +493,7 @@ Extract ONLY information related to `{section_name}` from the above text and for
     def _execute_epoch_extraction(self, prompt: str, epoch_num: int, section_name: str) -> Dict[str, Any]:
         """Execute the focused extraction for a single epoch."""
         try:
-            logging.info(f"  🤖 Processing epoch {epoch_num} extraction for {section_name}...")
+            logging.info(f"  Processing epoch {epoch_num} extraction for {section_name}...")
             
             from typing import cast, Any
             
@@ -334,7 +527,7 @@ Extract ONLY information related to `{section_name}` from the above text and for
                     if available_space > 0:
                         pitch_text = lines[pitch_start][:available_space] + "..."
                         prompt = before_pitch + '\n' + pitch_text + '\n' + after_pitch
-                        logging.warning(f"  ⚠️ Prompt truncated for epoch {epoch_num}")
+                        logging.warning(f"  Prompt truncated for epoch {epoch_num}")
             
             response = self.llm_summarizer.llm.create_chat_completion(
                 messages=cast(Any, messages),
@@ -354,7 +547,7 @@ Extract ONLY information related to `{section_name}` from the above text and for
                 cleaned_result = self._clean_extraction_response(result)
                 # Parse and validate JSON
                 parsed_result = self._parse_and_validate_json(cleaned_result, section_name, epoch_num)
-                logging.info(f"  📝 Epoch {epoch_num} extraction completed successfully")
+                logging.info(f"  Epoch {epoch_num} extraction completed successfully")
                 return parsed_result
             else:
                 return self._create_empty_section_result(section_name, "Empty response from LLM")
@@ -497,7 +690,9 @@ Extract ONLY information related to `{section_name}` from the above text and for
             "business_performance_and_traction",
             "strategy_and_goals",
             "funding_information",
-            "mentioned_organizations"
+            "mentioned_organizations",
+            "problem_extraction",
+            "solution_extraction"
         ]
         
         for i, section in enumerate(sections):
@@ -525,9 +720,9 @@ Extract ONLY information related to `{section_name}` from the above text and for
         
         # Add metadata
         master_json["_analysis_metadata"] = {
-            "analysis_type": "8-Epoch Focused NER Extraction",
+            "analysis_type": "10-Epoch Focused NER Extraction",
             "timestamp": datetime.datetime.now().isoformat(),
-            "total_epochs": 8,
+            "total_epochs": 10,
             "extraction_method": "Multi-pass focused extraction with LLM context resets",
             "extraction_summary": extraction_summary
         }
@@ -547,29 +742,36 @@ Extract ONLY information related to `{section_name}` from the above text and for
             "merged_sections": len([s for s in extraction_summary.values() if "Successfully" in s])
         }
 
-def analyze_pitch_8_epochs(pitch_text: str, output_dir: Optional[str] = None) -> Dict[str, Any]:
+def analyze_pitch_10_epochs(pitch_text: str, output_dir: Optional[str] = None, model_name: Optional[str] = None) -> Dict[str, Any]:
     """
-    Convenience function to run 8-epoch NER analysis on pitch text.
+    Convenience function to run 10-epoch NER analysis on pitch text.
     
     Args:
         pitch_text: The business pitch text to analyze
         output_dir: Custom output directory
+        model_name: The name of the model to use for analysis.
         
     Returns:
         Analysis results with file paths
     """
-    analyzer = EightEpochNERAnalyzer()
-    return analyzer.run_8_epoch_analysis(pitch_text, output_dir)
+    analyzer = TenEpochNERAnalyzer(model_name=model_name)
+    return analyzer.run_10_epoch_analysis(pitch_text, output_dir)
 
 def main():
     """Main function for standalone execution."""
     import argparse
     
-    parser = argparse.ArgumentParser(description='8-Epoch NER Analysis for VC Pitches')
+    parser = argparse.ArgumentParser(description='10-Epoch NER Analysis for VC Pitches')
     parser.add_argument('input_file', help='Path to text file containing the pitch')
     parser.add_argument('-o', '--output', help='Custom output directory for results')
+    parser.add_argument('--model', help='Name of the model to use for analysis')
     
     args = parser.parse_args()
+    
+    # Ensure output_directory folder exists
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    output_directory = os.path.join(base_dir, 'output_directory')
+    os.makedirs(output_directory, exist_ok=True)
     
     # Read input file
     try:
@@ -582,19 +784,20 @@ def main():
         print(f"Error reading input file: {e}")
         return
     
-    print(f"📄 Reading pitch from: {args.input_file}")
-    print(f"📏 Pitch length: {len(pitch_text)} characters")
-    print("🚀 Starting 8-Epoch NER Analysis...")
+    print(f" Reading pitch from: {args.input_file}")
+    print(f" Pitch length: {len(pitch_text)} characters")
+    print(" Starting 10-Epoch NER Analysis...")
     
-    # Perform 8-epoch NER analysis
-    results = analyze_pitch_8_epochs(
+    # Perform 10-epoch NER analysis
+    results = analyze_pitch_10_epochs(
         pitch_text=pitch_text,
-        output_dir=args.output
+        output_dir=args.output,
+        model_name=args.model
     )
     
     # Display results
     print("\n" + "="*60)
-    print("🎯 8-EPOCH NER ANALYSIS RESULTS")
+    print(" 10-EPOCH NER ANALYSIS RESULTS")
     print("="*60)
     
     if "error" in results:
@@ -619,7 +822,7 @@ def main():
         filename = os.path.basename(file_path)
         print(f"  {i}. {filename}")
     
-    print("\n✅ 8-Epoch NER Analysis Complete!")
+    print("\n✅ 10-Epoch NER Analysis Complete!")
 
 if __name__ == "__main__":
     main()

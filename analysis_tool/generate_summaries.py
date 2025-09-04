@@ -18,9 +18,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 class AnalysisSummarizer:
     """Generates concise summaries for VC analysis questions using the same LLM."""
     
-    def __init__(self):
+    def __init__(self, model_name: Optional[str] = None):
         """Initialize the summarizer with LLM access."""
-        self.llm_summarizer = get_llm_summarizer()
+        self.llm_summarizer = get_llm_summarizer(model_name=model_name)
         
     def extract_numbers_from_text(self, text: str) -> List[str]:
         """Extract all numbers, percentages, and monetary values from text."""
@@ -428,11 +428,13 @@ def main():
     parser.add_argument('json_path', help='Path to the analysis JSON file')
     parser.add_argument('--output-dir', help='Output directory (defaults to same as input)')
     parser.add_argument('--single-epoch', action='store_true', help='Use single-epoch fallback instead of 3-epoch approach')
+    parser.add_argument('--model', type=str, default=None,
+                        help='Name of the model to use for summarization (uses default if not specified)')
     
     args = parser.parse_args()
     
     try:
-        summarizer = AnalysisSummarizer()
+        summarizer = AnalysisSummarizer(model_name=args.model)
         
         if not summarizer.llm_summarizer.is_available:
             print("⚠️ Warning: LLM not available. Using fallback summary generation.")

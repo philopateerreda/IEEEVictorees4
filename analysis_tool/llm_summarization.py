@@ -12,13 +12,63 @@ import re
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def get_model_path(model_name: Optional[str] = None) -> str:
+    """
+    Get the model path from the centralized configuration file.
+    Falls back to a default model if the specified name is not found.
+    """
+    # Construct the path to models.json relative to the script's location
+    # This assumes a structure like: .../IEEEVic/analysis_tool/llm_summarization.py
+    # and models.json is at .../IEEEVic/models.json
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, '..', 'models.json')
+
+    # Default model path as a fallback
+    default_model = "P:\\progs\\vsCode\\VSProjects\\NLP\\models\\gemma\\gemma-1.1-2b-it.gguf"
+
+    if not os.path.exists(config_path):
+        logging.warning(f"models.json not found at {config_path}. Using default model path.")
+        return default_model
+
+    try:
+        with open(config_path, 'r') as f:
+            config_data = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        logging.error(f"Failed to load or parse models.json: {e}. Using default model path.")
+        return default_model
+
+    # Extract models dictionary and default model
+    models = config_data.get('models', {})
+    default_model_name = config_data.get('default_model')
+
+    # If a specific model is requested and exists, return its path
+    if model_name and model_name in models:
+        model_info = models[model_name]
+        if isinstance(model_info, dict) and 'path' in model_info:
+            return model_info['path']
+        elif isinstance(model_info, str):
+            return model_info
+    
+    # Try default model from config
+    if default_model_name and default_model_name in models:
+        model_info = models[default_model_name]
+        if isinstance(model_info, dict) and 'path' in model_info:
+            return model_info['path']
+        elif isinstance(model_info, str):
+            return model_info
+    
+    # Fallback to hardcoded default
+    logging.warning(f"Model '{model_name}' not found and no usable default in models.json. Using hardcoded default.")
+    return default_model
+
+
 class LLMSummarizer:
     """
     Local LLM-based summarization using llama-cpp-python.
     Provides an alternative to transformer-based summarization.
     """
     
-    def __init__(self, model_path: Optional[str] = None, n_gpu_layers: int = 0, n_ctx: int = 2048):
+    def __init__(self, model_name: Optional[str] = None, n_gpu_layers: int = 0, n_ctx: int = 2048):
         """
         Initialize the LLM summarizer.
         
@@ -27,7 +77,7 @@ class LLMSummarizer:
             n_gpu_layers: Number of GPU layers to offload (0 for CPU-only, safer)
             n_ctx: Maximum context size (reduced to prevent memory issues)
         """
-        self.model_path = model_path or "P:\\progs\\vsCode\\VSProjects\\NLP\\models\\liquid\\LFM2-1.2B-Q8_0.gguf"
+        self.model_path = get_model_path(model_name)
         self.n_gpu_layers = n_gpu_layers
         self.n_ctx = n_ctx
         self.n_batch = 512  # Add batch size control
@@ -468,17 +518,22 @@ Summary (8-12 words):"""
             "n_ctx": self.n_ctx
         }
 
-# Global instance for reuse
-_llm_summarizer = None
+# Global instances for reuse, keyed by model name
+_llm_summarizers: Dict[str, LLMSummarizer] = {}
 
-def get_llm_summarizer() -> LLMSummarizer:
-    """Get or create the global LLM summarizer instance."""
-    global _llm_summarizer
-    if _llm_summarizer is None:
-        _llm_summarizer = LLMSummarizer()
-    return _llm_summarizer
+def get_llm_summarizer(model_name: Optional[str] = None) -> LLMSummarizer:
+    """Get or create a global LLM summarizer instance for a given model."""
+    global _llm_summarizers
+    # Use a key for the dictionary; if model_name is None, use a default key
+    key = model_name or "default_model"
+    
+    if key not in _llm_summarizers:
+        logging.info(f"Creating new LLMSummarizer instance for model: {key}")
+        _llm_summarizers[key] = LLMSummarizer(model_name=model_name)
+    
+    return _llm_summarizers[key]
 
-def generate_llm_summary(text: str, max_length: int = 150, style: str = "marketing") -> str:
+def generate_llm_summary(text: str, max_length: int = 150, style: str = "marketing", model_name: Optional[str] = None) -> str:
     """
     Convenience function for LLM-based summarization.
     
@@ -491,7 +546,7 @@ def generate_llm_summary(text: str, max_length: int = 150, style: str = "marketi
         Generated summary
     """
     try:
-        summarizer = get_llm_summarizer()
+        summarizer = get_llm_summarizer(model_name=model_name)
         if summarizer.is_available:
             return summarizer.generate_summary(text, max_length, style)
         else:
@@ -504,7 +559,7 @@ def generate_llm_summary(text: str, max_length: int = 150, style: str = "marketi
         words = text.split()[:30]  # Take first 30 words
         return f"Summary unavailable. Text preview: {' '.join(words)}..."
 
-def generate_10_epoch_summaries(json_file_path: str) -> bool:
+def generate_10_epoch_summaries(json_file_path: str, model_name: Optional[str] = None) -> bool:
     """
     Convenience function to generate 10-epoch summaries for analysis JSON.
     
@@ -515,7 +570,7 @@ def generate_10_epoch_summaries(json_file_path: str) -> bool:
         True if successful, False otherwise
     """
     try:
-        summarizer = get_llm_summarizer()
+        summarizer = get_llm_summarizer(model_name=model_name)
         if not summarizer.is_available:
             logging.error("LLM summarizer not available")
             return False
@@ -525,7 +580,7 @@ def generate_10_epoch_summaries(json_file_path: str) -> bool:
         logging.error(f"10-epoch summarization failed: {e}")
         return False
 
-def is_llm_available() -> bool:
+def is_llm_available(model_name: Optional[str] = None) -> bool:
     """Check if LLM summarization is available."""
-    summarizer = get_llm_summarizer()
+    summarizer = get_llm_summarizer(model_name=model_name)
     return summarizer.is_available

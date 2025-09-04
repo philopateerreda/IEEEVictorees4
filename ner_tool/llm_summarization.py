@@ -6,6 +6,28 @@ Alternative to transformer-based summarization with better context understanding
 import os
 import logging
 from typing import Optional, Dict, Any
+import json
+
+def get_model_path(model_name: str = None) -> str:
+    """Load model path from the central models.json config file."""
+    config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models.json'))
+    
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Model config not found at {config_path}")
+
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+
+    if model_name is None:
+        model_name = config.get("default_model")
+        if not model_name:
+            raise ValueError("No default model specified in models.json")
+
+    model_info = config.get("models", {}).get(model_name)
+    if not model_info or 'path' not in model_info:
+        raise ValueError(f"Model '{model_name}' not found or path is missing in models.json")
+
+    return model_info['path']
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,16 +38,16 @@ class LLMSummarizer:
     Provides an alternative to transformer-based summarization.
     """
     
-    def __init__(self, model_path: Optional[str] = None, n_gpu_layers: int = 0, n_ctx: int = 2048):
+    def __init__(self, model_name: Optional[str] = None, n_gpu_layers: int = 0, n_ctx: int = 2048):
         """
         Initialize the LLM summarizer.
         
         Args:
-            model_path: Path to GGUF model file
-            n_gpu_layers: Number of GPU layers to offload (0 for CPU-only, safer)
-            n_ctx: Maximum context size (reduced to prevent memory issues)
+            model_name: The name of the model to use (from models.json).
+            n_gpu_layers: Number of GPU layers to offload (0 for CPU-only, safer).
+            n_ctx: Maximum context size (reduced to prevent memory issues).
         """
-        self.model_path = model_path or "P:\\progs\\vsCode\\VSProjects\\NLP\\models\\liquid\\LFM2-1.2B-Q8_0.gguf"
+        self.model_path = get_model_path(model_name)
         self.n_gpu_layers = n_gpu_layers
         self.n_ctx = n_ctx
         self.n_batch = 512  # Add batch size control
@@ -170,15 +192,20 @@ Executive Summary:"""
             "n_ctx": self.n_ctx
         }
 
-# Global instance for reuse
-_llm_summarizer = None
+# Global instances for reuse, keyed by model name
+_llm_summarizers: Dict[str, LLMSummarizer] = {}
 
-def get_llm_summarizer() -> LLMSummarizer:
-    """Get or create the global LLM summarizer instance."""
-    global _llm_summarizer
-    if _llm_summarizer is None:
-        _llm_summarizer = LLMSummarizer()
-    return _llm_summarizer
+def get_llm_summarizer(model_name: Optional[str] = None) -> LLMSummarizer:
+    """Get or create a global LLM summarizer instance for a specific model."""
+    global _llm_summarizers
+    
+    # Use default model if none is provided
+    key = model_name or "default"
+
+    if key not in _llm_summarizers:
+        _llm_summarizers[key] = LLMSummarizer(model_name=model_name)
+        
+    return _llm_summarizers[key]
 
 def generate_llm_summary(text: str, max_length: int = 150, style: str = "marketing") -> str:
     """
