@@ -1,6 +1,5 @@
 # Ignore generated output files
 output/
-NLP\IEEEVic\Scoring\scoring_results
-NLP\IEEEVic\Scoring\feedback\feedback\results
-NLP\IEEEVic\ner_tool\output_directory
-NLP\IEEEVic\Scoring\scoring_results
+.\Scoring\scoring_results
+.\ner_tool\output_directory
+.\Scoring\scoring_results
