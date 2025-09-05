@@ -117,6 +117,9 @@ def analyze_pitch_from_input():
     
     # Save report
     try:
+        # Ensure generator exists (file-path inputs may not have created one)
+        if 'generator' not in locals():
+            generator = PitchFeedbackGenerator()
         report_path = generator.save_feedback_report(pitch_text, feedback_results)
         print(f"\n💾 Full report saved: {report_path}")
     except Exception as e:

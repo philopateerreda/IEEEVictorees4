@@ -1,0 +1,60 @@
+{
+  "pitch_length": 1675,
+  "total_criteria": 10,
+  "scored_criteria": 10,
+  "total_score": 48,
+  "average_score": 4.8,
+  "scores": {
+    "problem": {
+      "name": "Problem Definition & Market Pain",
+      "description": "Does the pitch identify a critical, underserved problem with quantifiable impact?",
+      "score": 6
+    },
+    "solution": {
+      "name": "Solution & Value Proposition",
+      "description": "Does the solution offer a transformative improvement with clear, measurable benefits?",
+      "score": 6
+    },
+    "market": {
+      "name": "Market Strategy & Sizing",
+      "description": "Is the market analysis credible, with a logical strategy to capture a significant share?",
+      "score": 5
+    },
+    "product_tech": {
+      "name": "Technology & Product Excellence",
+      "description": "Does the technology create a genuine competitive advantage with demonstrable results?",
+      "score": 5
+    },
+    "go_to_market": {
+      "name": "Go-to-Market & Customer Acquisition",
+      "description": "Is there a validated, scalable, and capital-efficient path to acquiring customers?",
+      "score": 4
+    },
+    "team": {
+      "name": "Team & Founder-Market Fit",
+      "description": "Does the team have the unique domain expertise, skills, and resilience to win?",
+      "score": 4
+    },
+    "traction": {
+      "name": "Traction & Momentum",
+      "description": "Is there compelling evidence of product-market fit and accelerating growth?",
+      "score": 6
+    },
+    "competition": {
+      "name": "Competitive Landscape & Positioning",
+      "description": "Do they show a deep understanding of the competitive landscape and a winning strategy?",
+      "score": 3
+    },
+    "defensibility": {
+      "name": "Defensibility & Scalability",
+      "description": "Does the business model create compounding advantages and increasing returns to scale?",
+      "score": 5
+    },
+    "financials": {
+      "name": "Financials & Capital Strategy",
+      "description": "Is there a credible, milestone-driven path to sustainable unit economics and profitability?",
+      "score": 4
+    }
+  },
+  "timestamp": "2025-09-03 10:25:54"
+}

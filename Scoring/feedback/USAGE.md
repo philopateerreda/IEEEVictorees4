@@ -5,16 +5,20 @@ The pitch feedback system analyzes your venture pitches across 10 key criteria u
 
 ## Quick Start
 
-### Method 1: Interactive Analysis
-```bash
-cd "P:\progs\vsCode\VSProjects\NLP\IEEEVic\Scoring"
-python analyze_pitch.py
-# Then paste your pitch text and press Ctrl+Z + Enter
+### Method 1: Interactive Analysis (PowerShell)
+```powershell
+Set-Location "P:\progs\vsCode\VSProjects\NLP\IEEEVic\Scoring"
+python .\feedback\analyze_pitch.py
+# Then paste your pitch text and press Ctrl+Z then Enter
 ```
 
-### Method 2: Command Line 
-```bash
-python analyze_pitch.py "Our AI startup revolutionizes healthcare scheduling..."
+### Method 2: One-Liner (PowerShell)
+```powershell
+# Analyze a pitch string directly
+python .\feedback\analyze_pitch.py "Our AI startup revolutionizes healthcare scheduling..."
+
+# OR analyze a text file (path is relative to the *feedback* folder)
+python .\feedback\analyze_pitch.py "..\..\sample_pitch.txt"
 ```
 
 ### Method 3: Python Script
