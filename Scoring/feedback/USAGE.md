@@ -14,23 +14,12 @@ python .\feedback\analyze_pitch.py
 
 ### Method 2: One-Liner (PowerShell)
 ```powershell
-# Analyze a pitch string directly
-python .\feedback\analyze_pitch.py "Our AI startup revolutionizes healthcare scheduling..."
 
-# OR analyze a text file (path is relative to the *feedback* folder)
+
+# analyze a text file (path is relative to the *feedback* folder)
 python .\feedback\analyze_pitch.py "..\..\sample_pitch.txt"
 ```
 
-### Method 3: Python Script
-```python
-from Feedback import analyze_pitch_feedback
-
-pitch_text = """Your pitch text here..."""
-feedback = analyze_pitch_feedback(pitch_text)
-
-for section, comment in feedback.items():
-    print(comment)
-```
 
 ## What It Analyzes
 

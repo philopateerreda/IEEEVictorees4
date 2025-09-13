@@ -3,3 +3,5 @@ output/
 .\Scoring\scoring_results
 .\ner_tool\output_directory
 .\Scoring\scoring_results
+.\Scoring\feedback\results
+.\ner_tool\output_directory

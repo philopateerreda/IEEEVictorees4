@@ -132,7 +132,7 @@ class VCPitchAnalyzer:
         if len(question_parts) >= 2:
             title = question_parts[0].strip()
             question_detail = question_parts[1].strip()
-            formatted_question = f"**{title}**\n{question_detail}"
+            formatted_question = f"**{title}**\n{question_detail}\n\n"
             question_title = title
         else:
             formatted_question = f"**{start_num}. {question}**"

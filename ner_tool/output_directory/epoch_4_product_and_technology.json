@@ -1,0 +1,13 @@
+{
+  "product_and_technology": {
+    "core_technology_stack": [
+      "AI"
+    ],
+    "products_and_features": [
+      {
+        "name": "SynthMed",
+        "description": "AI co-pilot for hospital pharmacists"
+      }
+    ]
+  }
+}

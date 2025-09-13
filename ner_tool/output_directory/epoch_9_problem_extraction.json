@@ -1,0 +1,15 @@
+{
+  "problem_extraction": {
+    "core_problem": "medication errors",
+    "problem_description": "harming patients and costing the US healthcare system over $20 billion annually",
+    "target_audience_affected": [
+      "hospital pharmacists"
+    ],
+    "pain_points": [
+      "manual verification of complex orders",
+      "bureaucratic systems leading to errors",
+      "burnout and dangerous mistakes"
+    ],
+    "market_gap_identified": "data problem in medication verification"
+  }
+}
